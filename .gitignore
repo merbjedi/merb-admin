@@ -9,9 +9,11 @@
 .svn/*
 TAGS
 TODO
+bin/*
 coverage/*
-gems/gems/*
-gems/specifications/*
+doc/*
+gems/
+!gems/cache/
 log/*
 merb_profile_results
 pkg/*

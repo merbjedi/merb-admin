@@ -1,3 +1,7 @@
+require 'dm-core'
+require 'dm-validations'
+require 'dm-aggregates'
+
 module MerbAdmin
   class AbstractModel
     module DatamapperSupport
@@ -17,11 +21,6 @@ module MerbAdmin
 
       def all(options = {})
         merge_order!(options)
-        model.all(options)
-      end
-
-      def all_in(ids, options = {})
-        options[:id] = ids
         model.all(options)
       end
 
@@ -134,24 +133,8 @@ module MerbAdmin
       end
 
       module InstanceMethods
-        def id
-          super
-        end
-
-        def save
-          super
-        end
-
-        def destroy
-          super
-        end
-
         def update_attributes(attributes)
-          super
-        end
-
-        def errors
-          super
+          update(attributes)
         end
 
         def clear_association(association)

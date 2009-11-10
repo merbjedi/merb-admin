@@ -44,29 +44,30 @@ module Merb
         when :activerecord
           require 'activerecord'
           require_models(orm)
-
           unless ActiveRecord::Base.connected?
             ActiveRecord::Base.establish_connection(:adapter => 'sqlite3', :database => ':memory:')
             ActiveRecord::Migration.verbose = false
-            ActiveRecord::Migrator.run(:up, "schema/migrations/", 1)
-            ActiveRecord::Migrator.run(:up, "schema/migrations/", 2)
-            ActiveRecord::Migrator.run(:up, "schema/migrations/", 3)
-            ActiveRecord::Migrator.run(:up, "schema/migrations/", 4)
-            ActiveRecord::Migrator.run(:up, "schema/migrations/", 5)
+            ActiveRecord::Migrator.run(:up, File.join(File.dirname(__FILE__), "migrations", "activerecord"), 1)
+            ActiveRecord::Migrator.run(:up, File.join(File.dirname(__FILE__), "migrations", "activerecord"), 2)
+            ActiveRecord::Migrator.run(:up, File.join(File.dirname(__FILE__), "migrations", "activerecord"), 3)
+            ActiveRecord::Migrator.run(:up, File.join(File.dirname(__FILE__), "migrations", "activerecord"), 4)
+            ActiveRecord::Migrator.run(:up, File.join(File.dirname(__FILE__), "migrations", "activerecord"), 5)
           end
         when :datamapper
           require 'dm-core'
-          require 'dm-types'
           require 'dm-aggregates'
           require 'dm-validations'
           require_models(orm)
-
           unless DataMapper::Repository.adapters.key?(:default)
             DataMapper.setup(:default, 'sqlite3::memory:')
             DataMapper.auto_migrate!
           end
         when :sequel
           require 'sequel'
+          require 'sequel/extensions/blank'
+          require 'sequel/extensions/migration'
+          Sequel::Migrator.apply(Sequel.sqlite, File.join(File.dirname(__FILE__), "migrations", "sequel"))
+          require_models(orm)
         else
           raise "MerbAdmin does not support the #{orm} ORM"
         end
