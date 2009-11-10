@@ -29,6 +29,21 @@ module MerbAdmin
       else
         raise "MerbAdmin does not support the #{Merb.orm} ORM"
       end
+      
+      # pick which models to return based on configuration options
+      unless MerbAdmin[:included].blank?
+        @models = @models.select do |model|
+          MerbAdmin[:included].include?(model.model.to_s)
+        end
+      end
+      
+      unless MerbAdmin[:excluded].blank?
+        @models = @models.select do |model|
+          !MerbAdmin[:excluded].include?(model.model.to_s)
+        end
+      end
+      
+      @models
     end
 
     # Given a symbol +model_name+, finds the corresponding model class
