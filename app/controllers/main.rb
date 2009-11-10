@@ -100,7 +100,7 @@ class MerbAdmin::Main < MerbAdmin::Application
 
   def destroy
     if @object.destroy
-      redirect(url(:merb_admin_list, :model_name => @abstract_model.singular_name), :message => {:notice => "#{@abstract_model.pretty_name} was successfully destroyed"})
+      redirect(url(:merb_admin_list, :model_name => @abstract_model.param_name), :message => {:notice => "#{@abstract_model.pretty_name} was successfully destroyed"})
     else
       raise BadRequest
     end
@@ -191,6 +191,28 @@ class MerbAdmin::Main < MerbAdmin::Application
       relationship << object
     end
     @object.save
+  end
+
+  def update_associations(association, ids = [])
+    associated_object = @object.send(association[:name])
+    @object.clear_association(associated_object)
+    @object.save
+    ids.each do |id|
+      update_association(association, id)
+    end
+  end
+
+  def redirect_on_success
+    model_param = @abstract_model.param_name
+    pretty_name = @abstract_model.pretty_name
+    action = params[:action]
+    if params[:_continue]
+      redirect(url(:merb_admin_edit, :model_name => model_param, :id => @object.id), :message => {:notice => "#{pretty_name} was successfully #{action}d"})
+    elsif params[:_add_another]
+      redirect(url(:merb_admin_new, :model_name => model_param), :message => {:notice => "#{pretty_name} was successfully #{action}d"})
+    else
+      redirect(url(:merb_admin_list, :model_name => model_param), :message => {:notice => "#{pretty_name} was successfully #{action}d"})
+    end
   end
 
 end

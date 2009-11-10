@@ -8,6 +8,10 @@ module MerbAdmin
       def plural_name
         model.to_s.snake_case.pluralize.to_sym
       end
+      
+      def param_name
+        model.to_s
+      end
 
       def pretty_name
         model.to_s.snake_case.gsub('_', ' ').capitalize
